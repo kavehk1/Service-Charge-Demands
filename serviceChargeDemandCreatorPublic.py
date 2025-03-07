@@ -198,7 +198,7 @@ for row in sheet.iter_rows(min_row=2, values_only=True):
 
         # ✅ Function to send an email with a PDF attachment
     def send_email_with_attachment(email, subject, body, pdf_fn):
-        GMAIL_USER = "directors@ghfl.com"
+        GMAIL_USER = "d.e@f.com"
         GMAIL_PASSWORD = "your-app-password-here"  # ✅ Use Gmail App Password
 
         msg = EmailMessage()
@@ -235,7 +235,7 @@ for row in sheet.iter_rows(min_row=2, values_only=True):
     send_email_with_attachment(
         email,
         subject=f"Invoice - {file_name}",
-        body=f"Dear {first_name},\n\nPlease find attached your invoice for {next_month_name}.\n\nBest Regards,\nGenesis House Freehold Ltd.",
+        body=f"Dear {first_name},\n\nPlease find attached your invoice for {next_month_name}.\n\nBest Regards,\nWoody House Freehold Ltd.",
         pdf_fn=pdf_fn
     )
 
