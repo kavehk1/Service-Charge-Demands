@@ -240,5 +240,5 @@ for row in sheet.iter_rows(min_row=2, values_only=True):
     )
 
     # Print a message to the console
-    print('Word and pdf documents created and emails sent!')
+print('Word and pdf documents created and emails sent!')
 
