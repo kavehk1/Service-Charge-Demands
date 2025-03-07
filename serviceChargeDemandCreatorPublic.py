@@ -53,16 +53,6 @@ for row in sheet.iter_rows(min_row=2, values_only=True):
     style = document.styles['Normal']
     style.font.name = 'Calibri'
 
-    # Get Owners name and Flat Number
-    #ownerName = 'Don MacDon'
-    #flatNo = '11'
-    #ownerName = input('Who is this invoice for? ')
-    #flatNo = input('Which Flat Number is this invoice for? ')
-
-    # set invoice detais:
-    #issueDate = "03 April 2025"
-    #invoiceREf = 's/c'
-
     # Add Header with two columns 
     header_section = document.sections[0]
     header_section.different_first_page_header_footer = True
