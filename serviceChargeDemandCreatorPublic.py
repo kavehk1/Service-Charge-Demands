@@ -8,6 +8,9 @@ from datetime import datetime
 from docx.oxml import parse_xml
 from docx.oxml.ns import nsdecls
 from openpyxl import load_workbook
+import smtplib
+import mimetypes
+from email.message import EmailMessage
 
 # Load the Excel file
 excel_file = r"data.xlsx"
@@ -19,11 +22,12 @@ for row in sheet.iter_rows(min_row=2, values_only=True):
         continue
 
     #Set variables from the Excel file
-    flat_no= (f"{row[0]}") # Use first column value as filename
+    flat_no= f"{row[0]}" # Use first column value as filename
     ownerName = f"{row[1]}"  # Use second column value as owner name
     arrears = float(f"{row[2]}")  # Use third column value as arrears
     service_charge = float(f"{row[3]}")  # Use fourth column value as service charge
-
+    first_name = f"{row[4]}" # Get the first name of the owner
+    email = str(f"{row[5]}") # Get the email address of the owner 
     document = Document()  # Create a new Word document
 
     # Get the current month and year
@@ -192,4 +196,49 @@ for row in sheet.iter_rows(min_row=2, values_only=True):
     convert(word_fn, pdf_fn)
     os.startfile(pdf_fn)
 
-    print('Word and pdf documents created!')
+        # ✅ Function to send an email with a PDF attachment
+    def send_email_with_attachment(email, subject, body, pdf_fn):
+        GMAIL_USER = "directors@ghfl.com"
+        GMAIL_PASSWORD = "your-app-password-here"  # ✅ Use Gmail App Password
+
+        msg = EmailMessage()
+        msg["From"] = GMAIL_USER
+        msg["To"] = email
+        msg["Subject"] = subject
+        msg.set_content(body)
+
+        # ✅ Get MIME type for the PDF file
+        mime_type, encoding = mimetypes.guess_type(pdf_fn)
+        if mime_type is None:
+            mime_type = "application/pdf"  # Default to PDF type
+        main_type, sub_type = mime_type.split("/", 1)
+
+        # ✅ Attach PDF file
+        try:
+            with open(pdf_fn, "rb") as file:
+                msg.add_attachment(file.read(), maintype=main_type, subtype=sub_type, filename=os.path.basename(pdf_fn))
+        except FileNotFoundError:
+            print(f"🚨 Error: File '{pdf_fn}' not found. Email not sent.")
+            return  # Stop execution for this email
+
+        # ✅ Send Email via Gmail SMTP
+        try:
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+                server.login(GMAIL_USER, GMAIL_PASSWORD)
+                server.send_message(msg)
+            print(f"✅ Email sent to {email} with attachment {pdf_fn}")
+        except Exception as e:
+            print(f"🚨 Email sending failed: {e}")
+
+
+    # ✅ Send Email
+    send_email_with_attachment(
+        email,
+        subject=f"Invoice - {file_name}",
+        body=f"Dear {first_name},\n\nPlease find attached your invoice for {next_month_name}.\n\nBest Regards,\nGenesis House Freehold Ltd.",
+        pdf_fn=pdf_fn
+    )
+
+    # Print a message to the console
+    print('Word and pdf documents created and emails sent!')
+
